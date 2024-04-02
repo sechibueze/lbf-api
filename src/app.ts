@@ -2,7 +2,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import * as dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-
+import apiRoutes from './routes';
 dotenv.config();
 
 const app: Application = express();
@@ -10,22 +10,23 @@ const options: cors.CorsOptions = {
   origin: ['http://localhost:3000'],
   credentials: true,
 };
+
 app.use(cookieParser());
 app.use(cors(options));
-
+app.use(express.json());
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-Requested-With,content-type'
+    'X-Requested-With,Content-Type'
   );
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   // Pass to next layer of middleware
   next();
 });
-app.use(express.json());
 
 // Routing
+app.use('/api', apiRoutes);
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, World!');
 });
