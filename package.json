@@ -6,7 +6,7 @@
   "scripts": {
     "tsc": "tsc",
     "dev": "tsc-watch --onSuccess \"node dist/server.js\"",
-    "start": "node dist/app.js",
+    "start": "node dist/server.js",
     "postinstall": "npm run tsc",
     "build": "ls && npm run tsc",
     "lint": "eslint src/**/*.ts"
