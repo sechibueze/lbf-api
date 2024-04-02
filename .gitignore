@@ -1,3 +1,9 @@
+
+# Project files to ignore
+NOTES.md
+.env
+node_modules
+
 # Logs
 logs
 *.log
