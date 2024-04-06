@@ -1,12 +1,13 @@
-import { DataSourceOptions } from 'typeorm';
+import { DataSourceOptions, DataSource } from 'typeorm';
 import { appConfig } from '../constants/app.constant';
+import { User } from '../entities/user.entity';
+import { Business } from '../entities/business.entity';
 
-export const dbConfig: DataSourceOptions = {
+const dbConfig: DataSourceOptions = {
   type: 'postgres',
   url: appConfig.DATABASE_URI,
-  entities: [],
+  entities: [User, Business],
   synchronize: process.env.NODE_ENV !== 'production',
-  ssl: {
-    rejectUnauthorized: false,
-  },
 };
+
+export const AppDataSource = new DataSource(dbConfig);
