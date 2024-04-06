@@ -9,17 +9,25 @@ export const validateSchema = (schema, data) => {
     const validatedData = schema.parse(data);
     response.data = validatedData;
   } catch (error) {
-    const formattedErrors = {};
+    let formattedErrors = {};
     if (error instanceof z.ZodError) {
-      error.errors.forEach((err) => {
-        // Extract field name from error message
-        const fieldName = err.path.join('.');
-        // Map field name to error message
-        formattedErrors[fieldName] = err.message;
-      });
+      formattedErrors = error.issues.reduce((acc, issue) => {
+        const path = issue.path.join('.');
+        const message = issue.message;
+
+        // Check if path contains nested object (e.g., "business.street")
+        if (path.includes('.')) {
+          const [objectName, field] = path.split('.');
+          acc[objectName] = acc[objectName] || {};
+          acc[objectName][field] = message;
+        } else {
+          acc[path] = message;
+        }
+
+        return acc;
+      }, {});
     }
     response.errors = formattedErrors;
   }
-
   return response;
 };

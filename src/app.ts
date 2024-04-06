@@ -3,9 +3,24 @@ import * as dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import apiRoutes from './routes';
+import { AppResponse } from './libs/response.lib';
+import { User } from './entities/user.entity';
 dotenv.config();
-
 const app: Application = express();
+// declare module 'express' {
+//   interface Request {
+//     user: User;
+//   }
+// }
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+    }
+  }
+}
+
 const options: cors.CorsOptions = {
   origin: ['http://localhost:3000'],
   credentials: true,
@@ -34,7 +49,11 @@ app.get('/', (req: Request, res: Response) => {
 // Error handler middleware
 app.use((err: any, req: Request, res: Response, next: any) => {
   console.error(err.stack);
-  res.status(500).send('Something went wrong!');
+  return AppResponse.serverError({
+    res,
+    message: err.message,
+    errors: err,
+  });
 });
 
 export default app;

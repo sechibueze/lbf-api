@@ -2,7 +2,7 @@ import * as express from 'express';
 import { UserController } from '../controllers/users.controller';
 import { catchAsyncErrors } from '../middlewares/catchAsyncErrors.middleware';
 import { validateRequest } from '../middlewares/validator.middleware';
-import { createUserSchema } from '../schema/user.schema';
+import { createUserAndBusinessSchema } from '../schema/user.schema';
 
 const router = express.Router();
 
@@ -18,7 +18,10 @@ const router = express.Router();
  */
 router.post(
   '/',
-  catchAsyncErrors(validateRequest(createUserSchema), UserController.register)
+  catchAsyncErrors(
+    validateRequest(createUserAndBusinessSchema),
+    UserController.register
+  )
 );
 
 export default router;

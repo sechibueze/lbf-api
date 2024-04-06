@@ -6,3 +6,5 @@ export const PASSWORD_REGEX =
 
 export const FULL_NAME_REGEX =
   /^\s*([A-Za-z]{1,}([\.,] |[-']| ))+[A-Za-z]+\.?\s*$/;
+
+export const PHONE_NUMBER_REGEX = /^\+(?:[0-9] ?){6,14}[0-9]$/;
