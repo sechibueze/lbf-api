@@ -1,9 +1,10 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
 import { AppBaseEntity } from './base.entity';
 import { User } from './user.entity';
+import { SUPPORTED_VENTURE_TYPES } from '../schema/venture.schema';
 
-@Entity({ name: 'business' })
-export class Business extends AppBaseEntity {
+@Entity({ name: 'ventures' })
+export class Venture extends AppBaseEntity {
   @ManyToOne(() => User, (user) => user.ventures, { onDelete: 'CASCADE' })
   owner: User;
 
@@ -35,6 +36,10 @@ export class Business extends AppBaseEntity {
   @Column({ type: 'bool', default: false })
   is_verified: boolean;
 
-  @Column({ type: 'enum', enum: ['r', 'w'], default: 'w' })
+  @Column({
+    type: 'enum',
+    enum: SUPPORTED_VENTURE_TYPES,
+    default: SUPPORTED_VENTURE_TYPES[0],
+  })
   type: string;
 }

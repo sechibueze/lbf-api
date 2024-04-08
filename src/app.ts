@@ -43,7 +43,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Routing
 app.use('/api', apiRoutes);
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, World!');
+  return res.status(200).json({
+    message: `We are busy ATM building Pamundo!`,
+  });
 });
 
 // Error handler middleware
