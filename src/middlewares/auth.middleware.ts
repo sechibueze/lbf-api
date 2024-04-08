@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AppResponse } from '../libs/response.lib';
 import { appConfig } from '../constants/app.constant';
 import jwt from 'jsonwebtoken';
-import { AccountService } from '../services/account.service';
+import { UserService } from '../services/user.service';
 
 export const checkAuth = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -18,7 +18,7 @@ export const checkAuth = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, appConfig.JWT_SECRET_KEY);
 
-    const user = await AccountService.getUser('', decoded.userId);
+    const user = await UserService.getUser({ id: decoded.userId });
     req.user = user;
 
     next();

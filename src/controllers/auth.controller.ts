@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 
 import { AppResponse } from '../libs/response.lib';
-import { AccountService } from '../services/account.service';
+import { AuthService } from '../services/auth.service';
+import { UserService } from '../services/user.service';
 
 export class AuthController {
   static async getCurrentUser(req: Request, res: Response) {
@@ -12,7 +13,7 @@ export class AuthController {
     });
   }
   static async login(req: Request, res: Response) {
-    const result = await AccountService.loginUser(req.body);
+    const result = await AuthService.loginUser(req.body);
     return AppResponse.ok({
       res,
       message: 'User login successfully!',
@@ -21,14 +22,18 @@ export class AuthController {
   }
 
   static async verifyAccount(req: Request, res: Response) {
-    const message = await AccountService.verifyAccount(
-      req.body.email,
+    const message = await AuthService.verifyAccount(
+      req.body.email || req.body.id,
       req.body.token
     );
     return AppResponse.ok({ res, ...message });
   }
   static async resendToken(req: Request, res: Response) {
-    const message = await AccountService.resendToken(req.body.email);
-    return AppResponse.ok({ res, message: 'Account token has been sent!' });
+    const message = await AuthService.resendToken(req.body.email);
+    return AppResponse.ok({
+      res,
+      message: 'Account token has been sent!',
+      ...message,
+    });
   }
 }

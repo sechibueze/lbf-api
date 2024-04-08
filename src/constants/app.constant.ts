@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
+
 export const appConfig = {
   APP_ID: 'Pamundo',
   DATABASE_URI: process.env.DATABASE_URI,
