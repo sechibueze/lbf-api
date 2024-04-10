@@ -3,7 +3,12 @@ import { catchAsyncErrors } from '../middlewares/catchAsyncErrors.middleware';
 import { validateRequest } from '../middlewares/validator.middleware';
 import { loginUserSchema } from '../schema/user.schema';
 import { AuthController } from '../controllers/auth.controller';
-import { resendTokenSchema, verifyAccountSchema } from '../schema/auth.schema';
+import {
+  forgotPasswordSchema,
+  resendTokenSchema,
+  resetPasswordSchema,
+  verifyAccountSchema,
+} from '../schema/auth.schema';
 import { checkAuth } from '../middlewares/auth.middleware';
 
 const router = express.Router();
@@ -67,6 +72,40 @@ router.post(
 router.post(
   '/',
   catchAsyncErrors(validateRequest(loginUserSchema), AuthController.login)
+);
+/***
+ * @method PUT
+ * @route /auth/forgot-password
+ * @query none
+ * @params none
+ * @access public
+ * @role none
+ * @body forgotPasswordSchema
+ * @description Send password reset token
+ */
+router.put(
+  '/forgot-password',
+  catchAsyncErrors(
+    validateRequest(forgotPasswordSchema),
+    AuthController.sendPasswordResetToken
+  )
+);
+/***
+ * @method PUT
+ * @route /auth/reset-password
+ * @query none
+ * @params none
+ * @access public
+ * @role none
+ * @body resetPasswordSchema
+ * @description Reset password
+ */
+router.put(
+  '/reset-password',
+  catchAsyncErrors(
+    validateRequest(resetPasswordSchema),
+    AuthController.resetPassword
+  )
 );
 
 export default router;

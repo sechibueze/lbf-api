@@ -23,17 +23,28 @@ export class AuthController {
 
   static async verifyAccount(req: Request, res: Response) {
     const message = await AuthService.verifyAccount(
-      req.body.email || req.body.id,
+      req.body.identifier,
       req.body.token
     );
     return AppResponse.ok({ res, ...message });
   }
   static async resendToken(req: Request, res: Response) {
-    const message = await AuthService.resendToken(req.body.email);
+    const message = await AuthService.resendAccountVerificationToken(
+      req.body.identifier
+    );
     return AppResponse.ok({
       res,
       message: 'Account token has been sent!',
       ...message,
     });
+  }
+
+  static async sendPasswordResetToken(req: Request, res: Response) {
+    const message = await AuthService.sendPasswordResetToken(req.body.email);
+    return AppResponse.ok({ res, ...message });
+  }
+  static async resetPassword(req: Request, res: Response) {
+    const message = await AuthService.resetPassword(req.body);
+    return AppResponse.ok({ res, ...message });
   }
 }

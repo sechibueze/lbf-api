@@ -9,6 +9,8 @@ export const NOTIFICATION_FILTER = {
   RETAILER_CREATED: 'Retailer.created',
   WHOLESALER_CREATED: 'Wholesaler.created',
   ACCOUNT_VERIFIED: 'Account.verified',
+  PASSWORD_RESET_TOKEN: 'PasswordReset.token',
+  PASSWORD_RESET_COMPLETE: 'PasswordReset.complete',
 };
 interface EmailOptions {
   subject: string;
@@ -57,44 +59,4 @@ export class Notifier {
 
     return await this.send(recipientEmail, template, templateData);
   }
-  //   async sendAccountConfirmation(recipientEmail: string, _options) {
-  //     const {
-  //       name,
-  //       action,
-  //       cta,
-  //       cta_label,
-  //       subject,
-  //       id: userRef,
-  //       token: confirmToken,
-  //     } = _options;
-
-  //     const template = appConfig.COURIER_ACCOUNT_TEMPLATE;
-  //     const templateData = {
-  //       name: name || 'Leader',
-  //       appName: appConfig.APP_ID,
-  //       cta:
-  //         cta ||
-  //         `${appConfig.FRONTEND_URL}/auth/verify?token=${confirmToken}&id=${userRef}`,
-  //       action,
-  //       cta_label: cta_label || 'Confirm your account',
-  //       subject: subject || `${appConfig.APP_ID} - Account Confirmation`,
-  //     };
-
-  //     return await this.send(recipientEmail, template, templateData);
-  //   }
-  //   async sendPasswordResetEmail(toEmail: string, _data) {
-  //     const { name, id: userId, token: resetToken, action } = _data || {};
-  //     const cta = resetToken
-  //       ? `${appConfig.FRONTEND_URL}/auth/reset-password?token=${resetToken}&id=${userId}`
-  //       : '';
-  //     const template = appConfig.COURIER_ACCOUNT_TEMPLATE;
-  //     const templateData = {
-  //       name: name || toEmail,
-  //       appName: appConfig.APP_ID,
-  //       cta,
-  //       action,
-  //     };
-
-  //     return await this.send(toEmail, template, templateData);
-  //   }
 }
