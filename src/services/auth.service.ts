@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { loginUserSchema } from '../schema/user.schema';
 import { UserService } from './user.service';
 import { AppResponse } from '../libs/response.lib';
+import { resetPasswordSchema } from '../schema/auth.schema';
 
 export class AuthService {
   static generateVerificationToken(length: number = 6) {
@@ -51,12 +52,12 @@ export class AuthService {
       throw new Error(error.message);
     }
   }
-  static async verifyAccount(email, verificationToken) {
+  static async verifyAccount(identifier: string, verificationToken) {
     let filter: { email?: string; id?: string } = {};
-    if (email.includes('@')) {
-      filter.email = email;
+    if (identifier.includes('@')) {
+      filter.email = identifier;
     } else {
-      filter.id = email;
+      filter.id = identifier;
     }
     const user = await UserService.getUser({ ...filter });
     if (user.is_verified_email) {
@@ -82,17 +83,17 @@ export class AuthService {
     return { message: 'Account verified successfully' };
   }
 
-  static async resendToken(email: string) {
-    if (!email) {
-      throw new Error('Invalid user input');
+  static async resendAccountVerificationToken(identifier: string) {
+    if (!identifier) {
+      throw new Error('Invalid identifier provided');
+    }
+    let filter: { email?: string; id?: string } = {};
+    if (identifier.includes('@')) {
+      filter.email = identifier;
+    } else {
+      filter.id = identifier;
     }
 
-    let filter: { email?: string; id?: string } = {};
-    if (email.includes('@')) {
-      filter.email = email;
-    } else {
-      filter.id = email;
-    }
     const user = await UserService.getUser({ ...filter });
 
     if (user.is_verified_email) {
@@ -112,5 +113,61 @@ export class AuthService {
     });
 
     return { message: `Account  verified` };
+  }
+  static async sendPasswordResetToken(email: string) {
+    if (!email) {
+      throw new Error('Invalid user input');
+    }
+
+    const user = await UserService.getUser({ email });
+
+    if (!user) {
+      throw new Error('Account does not exist');
+    }
+    const token = this.generateVerificationToken();
+    const hashedToken = await bcrypt.hash(token, 10);
+    user.password_reset_token_hash = hashedToken;
+
+    user.save();
+
+    const notified = new Notifier().sendEmail(user.email, {
+      name: user.full_name,
+      subject: 'Reset your password on Pamundo',
+      token,
+      topic: NOTIFICATION_FILTER.PASSWORD_RESET_TOKEN,
+    });
+
+    return { message: `Password reset token sent`, data: { id: user.id } };
+  }
+  static async resetPassword({
+    id: userId,
+    token,
+    password,
+  }: z.infer<typeof resetPasswordSchema>) {
+    const user = await UserService.getUser({ id: userId });
+
+    if (!user.password_reset_token_hash) {
+      throw new Error(`Invalid request`);
+    }
+    const isValidToken = await bcrypt.compare(
+      token,
+      user.password_reset_token_hash
+    );
+    if (!isValidToken) {
+      throw new Error('Invalid verification code');
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    user.password_reset_token_hash = null;
+
+    user.save();
+
+    const notified = new Notifier().sendEmail(user.email, {
+      name: user.full_name,
+      subject: 'Password Reset',
+      topic: NOTIFICATION_FILTER.PASSWORD_RESET_COMPLETE,
+    });
+
+    return { message: `Password successfully reset` };
   }
 }
