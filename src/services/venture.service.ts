@@ -1,14 +1,8 @@
 import { AppDataSource as dataSource } from '../config/database.config';
-import { User } from '../entities/user.entity';
-import bcrypt from 'bcryptjs';
+
 import { NOTIFICATION_FILTER, Notifier } from '../libs/notification.lib';
-import { z } from 'zod';
-import { createUserSchema } from '../schema/user.schema';
-import { AuthService } from './auth.service';
-import { createVentureSchema } from '../schema/venture.schema';
+
 import { Venture } from '../entities/venture.entity';
-import { NOTFOUND } from 'dns/promises';
-import { query } from 'express';
 
 interface ventureQueryOption {
   owner?: {

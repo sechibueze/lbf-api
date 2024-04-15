@@ -1,0 +1,67 @@
+version: '3.9'
+
+services:
+  pamundo-api:
+    build: .
+    container_name: pamundo-api
+    ports:
+      - '5000:5000'
+    env_file:
+      - .env
+    depends_on:
+      - pamundo-db
+      - pamundo-rabbitMQ
+      # - redis
+      # - elasticsearch
+    networks:
+      - pamundo-network
+
+  pamundo-db:
+    image: postgres:latest
+    restart: always
+    container_name: pamundo-db
+    environment:
+      POSTGRES_PASSWORD: developer
+      POSTGRES_USER: developer
+      POSTGRES_DB: pamundo
+    networks:
+      - pamundo-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # redis:
+  #   image: redis:latest
+  #   restart: always
+  # container_name: pamundo-cache
+  #   ports:
+  #     - '6379:6379'
+  #   command: redis-server --loglevel warning
+  #   networks:
+  #     - pamundo-network
+
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.13.2
+  #   container_name: pamundo-elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #   ports:
+  #     - 9200:9200
+  #   networks:
+  #     - pamundo-network
+  #   volumes:
+  #     - elasticsearch_data:/var/lib/elasticsearch
+  pamundo-rabbitMQ:
+    image: rabbitmq:3.13-management
+    container_name: pamundoMQ
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - pamundo-network
+
+volumes:
+  postgres_data: {}
+  # elasticsearch_data: {}
+networks:
+  pamundo-network:
+    driver: bridge
