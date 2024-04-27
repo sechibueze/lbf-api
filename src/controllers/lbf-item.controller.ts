@@ -88,6 +88,16 @@ export class LBFItemController {
       data: itemsList,
     });
   }
+  static async getLBFItem(req: Request, res: Response) {
+    const lbfItem = await LBFItemService.getLBFItem({
+      itemId: req.params.itemId,
+    });
+    return AppResponse.ok({
+      res,
+      message: 'LBF Item!',
+      data: lbfItem,
+    });
+  }
   static async searchAndFilterLBFItems(req: Request, res: Response) {
     try {
       const resultSet = await LBFItemService.searchAndFilterLBFItems(req.query);

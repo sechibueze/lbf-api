@@ -62,6 +62,39 @@ router.put(
 
 /***
  * @method GET
+ * @route /lbf-items/search
+ * @query none
+ * @params none
+ * @access public
+ * @role none
+ * @body
+ * @description Search and filter products
+ */
+router.get(
+  '/search',
+  catchAsyncErrors(LBFItemController.searchAndFilterLBFItems)
+);
+
+/***
+ * @method GET
+ * @route /lbf-items/:id
+ * @query none
+ * @params none
+ * @access admin
+ * @role none
+ * @body
+ * @description Get item
+ */
+router.get(
+  '/:itemId',
+  catchAsyncErrors(
+    checkAuth,
+    verifyUserRoles(['admin']),
+    LBFItemController.getLBFItem
+  )
+);
+/***
+ * @method GET
  * @route /lbf-items
  * @query none
  * @params none
@@ -77,21 +110,6 @@ router.get(
     verifyUserRoles(['admin']),
     LBFItemController.listLBFItems
   )
-);
-
-/***
- * @method GET
- * @route /lbf-items/search
- * @query none
- * @params none
- * @access public
- * @role none
- * @body
- * @description Search and filter products
- */
-router.get(
-  '/search',
-  catchAsyncErrors(LBFItemController.searchAndFilterLBFItems)
 );
 
 export default router;

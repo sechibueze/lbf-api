@@ -14,8 +14,9 @@ interface LBFItemResultSet {
 }
 
 interface iSearchCriteria {
+  item_id?: string;
   // Search and filter
-  search?: string;
+  q?: string;
   tag?: string;
 
   // Add pagination parameters
@@ -43,9 +44,6 @@ export class LBFItemService {
         where: {
           id: itemId,
         },
-        relations: {
-          owner: true,
-        },
       };
 
       const existingLBFItem = await lbfItemRepository.findOne(findOpts);
@@ -58,8 +56,17 @@ export class LBFItemService {
   static async listLBFItems() {
     try {
       const lbfItemRepository = dataSource.getRepository(LBFItem);
-      const lbfItems = await lbfItemRepository.find();
-      return lbfItems;
+      const queryBuilder = lbfItemRepository.createQueryBuilder('lbf_item');
+
+      queryBuilder.orderBy('lbf_item.createdAt', 'DESC');
+      const [lbf_items, totalItems] = await queryBuilder.getManyAndCount();
+
+      return {
+        lbf_items,
+        meta: {
+          total: totalItems,
+        },
+      };
     } catch (error) {
       throw new AppError(error.message || 'Failed to list LBF Items');
     }
@@ -70,23 +77,32 @@ export class LBFItemService {
     const lbfItemRepository = dataSource.getRepository(LBFItem);
     const queryBuilder = lbfItemRepository.createQueryBuilder('lbf_item');
 
+    if (searchCriteria.item_id) {
+      // queryBuilder.where({ id: searchCriteria.item_id });
+      queryBuilder.where('lbf_item.id = :lbfItemId', {
+        lbfItemId: searchCriteria.item_id,
+      });
+    }
     // Build search query
-    if (searchCriteria.search) {
+    if (searchCriteria.q) {
       queryBuilder
         .where('LOWER(lbf_item.name) like :name', {
-          name: `%${searchCriteria.search.toLowerCase()}%`,
+          name: `%${searchCriteria.q.toLowerCase()}%`,
         })
         .orWhere('LOWER(lbf_item.description) like :name', {
-          description: `%${searchCriteria.search.toLowerCase()}%`,
+          description: `%${searchCriteria.q.toLowerCase()}%`,
         });
     }
+
     if (searchCriteria.tag) {
       queryBuilder.andWhere('LOWER(lbf_item.tags) like :tag', {
         tag: `%${searchCriteria.tag.toLowerCase()}%`,
       });
     }
 
-    queryBuilder.orderBy('lbf_item.createdAt', 'DESC');
+    queryBuilder
+      .andWhere({ is_claimed: false })
+      .orderBy('lbf_item.createdAt', 'DESC');
 
     // Pagination
     const page = Number(searchCriteria.page) || 1;
@@ -96,6 +112,7 @@ export class LBFItemService {
     queryBuilder.skip(skip).take(limit);
 
     const [lbf_items, totalItems] = await queryBuilder.getManyAndCount();
+    // console.log(queryBuilder.getSql());
     return {
       lbf_items,
 

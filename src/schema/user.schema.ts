@@ -43,7 +43,8 @@ export const createUserSchema = z
       .string({
         required_error: 'Phone number is required',
       })
-      .regex(PHONE_NUMBER_REGEX, { message: 'Invalid phone number' }),
+      .regex(PHONE_NUMBER_REGEX, { message: 'Invalid phone number' })
+      .optional(),
     password: z
       .string({
         required_error: 'Password is required',
