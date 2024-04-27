@@ -22,7 +22,7 @@ export class UserService {
       const user = await userRepository.findOneBy({ ...queryOption });
       return user;
     } catch (error) {
-      throw new Error('Failed to get user details');
+      throw new Error(`Failed to get user details ${error}`);
     }
   }
   static async createUser(data: z.infer<typeof createUserSchema>) {
