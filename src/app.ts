@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import apiRoutes from './routes';
 import { AppResponse } from './libs/response.lib';
 import { User } from './entities/user.entity';
+import { appConfig } from './constants/app.constant';
 dotenv.config();
 const app: Application = express();
 
@@ -17,7 +18,7 @@ declare global {
 }
 
 const options: cors.CorsOptions = {
-  origin: ['http://localhost:3000'],
+  origin: ['http://localhost:3000', appConfig.FRONTEND_URL],
   credentials: true,
 };
 
