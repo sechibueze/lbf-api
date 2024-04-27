@@ -2,25 +2,21 @@ import * as express from 'express';
 import { catchAsyncErrors } from '../middlewares/catchAsyncErrors.middleware';
 import { validateRequest } from '../middlewares/validator.middleware';
 import FileHandlerService from '../libs/file-upload.lib';
-import {
-  checkAuth,
-  verifyMembershipTypes,
-  verifyUserRoles,
-} from '../middlewares/auth.middleware';
+import { checkAuth, verifyUserRoles } from '../middlewares/auth.middleware';
 import { appConfig } from '../constants/app.constant';
-import { createProductSchema } from '../schema/product.schema';
-import { ProductController } from '../controllers/product.controller';
+import { createLBFItemSchema } from '../schema/lbf-item.schema';
+import { LBFItemController } from '../controllers/lbf-item.controller';
 
 const router = express.Router();
 
 /***
  * @method POST
- * @route /products
+ * @route /lbf-items
  * @query none
  * @params none
  * @access private
  * @role none
- * @body createProductSchema
+ * @body createLBFItemSchema
  * @description Create product
  */
 const fileHandleService = new FileHandlerService({ provider: 'cloudinary' });
@@ -28,83 +24,64 @@ router.post(
   '/',
   catchAsyncErrors(
     checkAuth,
-    verifyUserRoles(['user']),
-    verifyMembershipTypes(['w']),
+    verifyUserRoles(['admin']),
     fileHandleService.checkFile({
       fileSize: 500 * 1024,
       fileKey: 'image',
       fileType: 'image/',
       fileRequired: true,
     }),
-    validateRequest(createProductSchema),
-    ProductController.createProduct
+    validateRequest(createLBFItemSchema),
+    LBFItemController.registerLBFItem
   )
 );
 /***
  * @method PUT
- * @route /products/:productId
+ * @route /lbf-items/:itemId
  * @query none
- * @params productId: string, UUID
+ * @params itemId: string, UUID
  * @access private
  * @role none
  * @body
- * @description Update product
+ * @description Update LBFItem
  */
 router.put(
-  '/:productId',
+  '/:itemId',
   catchAsyncErrors(
     checkAuth,
-    verifyUserRoles(['user']),
+    verifyUserRoles(['admin']),
     fileHandleService.checkFile({
       fileSize: 500 * 1024,
       fileKey: 'image',
       fileType: 'image/',
       fileRequired: false,
     }),
-    ProductController.updateProduct
+    LBFItemController.updateLBFItem
   )
 );
 
 /***
  * @method GET
- * @route /products
+ * @route /lbf-items
  * @query none
  * @params none
  * @access admin
  * @role none
  * @body
- * @description List products
+ * @description List items
  */
 router.get(
   '/',
   catchAsyncErrors(
     checkAuth,
     verifyUserRoles(['admin']),
-    ProductController.listProducts
+    LBFItemController.listLBFItems
   )
 );
 
 /***
  * @method GET
- * @route /products/me
- * @query {}
- * @params none
- * @access private
- * @role none
- * @body
- * @description List user products
- */
-router.get(
-  '/me',
-  catchAsyncErrors(
-    checkAuth,
-    verifyUserRoles([`user`]),
-    ProductController.listUserProducts
-  )
-);
-/***
- * @method GET
- * @route /products/search
+ * @route /lbf-items/search
  * @query none
  * @params none
  * @access public
@@ -114,7 +91,7 @@ router.get(
  */
 router.get(
   '/search',
-  catchAsyncErrors(ProductController.searchAndFilterProducts)
+  catchAsyncErrors(LBFItemController.searchAndFilterLBFItems)
 );
 
 export default router;

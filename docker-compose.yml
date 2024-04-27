@@ -1,67 +1,67 @@
 version: '3.9'
 
 services:
-  pamundo-api:
+  lbf-api:
     build: .
-    container_name: pamundo-api
+    container_name: lbf-api
     ports:
       - '5000:5000'
     env_file:
       - .env
     depends_on:
-      - pamundo-db
-      - pamundo-rabbitMQ
+      - lbf-db
+      - lbf-rabbitMQ
       # - redis
       # - elasticsearch
     networks:
-      - pamundo-network
+      - lbf-network
 
-  pamundo-db:
+  lbf-db:
     image: postgres:latest
     restart: always
-    container_name: pamundo-db
+    container_name: lbf-db
     environment:
       POSTGRES_PASSWORD: developer
       POSTGRES_USER: developer
-      POSTGRES_DB: pamundo
+      POSTGRES_DB: lbf
     networks:
-      - pamundo-network
+      - lbf-network
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   # redis:
   #   image: redis:latest
   #   restart: always
-  # container_name: pamundo-cache
+  # container_name: lbf-cache
   #   ports:
   #     - '6379:6379'
   #   command: redis-server --loglevel warning
   #   networks:
-  #     - pamundo-network
+  #     - lbf-network
 
   # elasticsearch:
   #   image: docker.elastic.co/elasticsearch/elasticsearch:8.13.2
-  #   container_name: pamundo-elasticsearch
+  #   container_name: lbf-elasticsearch
   #   environment:
   #     - discovery.type=single-node
   #   ports:
   #     - 9200:9200
   #   networks:
-  #     - pamundo-network
+  #     - lbf-network
   #   volumes:
   #     - elasticsearch_data:/var/lib/elasticsearch
-  pamundo-rabbitMQ:
+  lbf-rabbitMQ:
     image: rabbitmq:3.13-management
-    container_name: pamundoMQ
+    container_name: lbfMQ
     ports:
       - '5672:5672'
       - '15672:15672'
     networks:
-      - pamundo-network
+      - lbf-network
 
 volumes:
   postgres_data: {}
   # elasticsearch_data: {}
 networks:
-  pamundo-network:
+  lbf-network:
     driver: bridge

@@ -1,5 +1,4 @@
 import * as amqp from 'amqplib';
-import { SegmentService } from '../services/segment.service';
 
 class MessageQueueService {
   private connection: amqp.Connection;
@@ -48,7 +47,7 @@ export default MessageQueueService;
 const handleNewSegment = async (segment) => {
   console.log('New segment added', segment);
   console.log('Updating redis cache...');
-  await SegmentService.onNewSegment();
+
   console.log('Updating elastic search ...');
   console.log('Sending notification ...');
 };

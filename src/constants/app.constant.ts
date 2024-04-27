@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const appConfig = {
-  APP_ID: 'Pamundo',
+  APP_ID: 'LBFItemPortal',
   DATABASE_URI: process.env.DATABASE_URI,
   COURIER_AUTH_TOKEN: process.env.COURIER_AUTH_TOKEN,
   JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
