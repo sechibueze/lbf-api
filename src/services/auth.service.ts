@@ -9,6 +9,8 @@ import { loginUserSchema } from '../schema/user.schema';
 import { UserService } from './user.service';
 import { AppResponse } from '../libs/response.lib';
 import { resetPasswordSchema } from '../schema/auth.schema';
+import { AppError } from '../utils/error.util';
+import { FindOptionsSelect, FindOptionsWhere } from 'typeorm';
 
 export class AuthService {
   static generateVerificationToken(length: number = 6) {
@@ -20,15 +22,37 @@ export class AuthService {
     return token;
   }
 
+  static async getUserDataWithSelection(
+    filter: FindOptionsWhere<User>,
+    selectedColumns: FindOptionsSelect<User>
+  ) {
+    try {
+      const userRepository = dataSource.getRepository(User);
+      const user = await userRepository.findOne({
+        where: filter,
+        select: selectedColumns,
+      });
+      return user;
+    } catch (error) {
+      throw new AppError(error.message);
+    }
+  }
+
   static async loginUser(data: z.infer<typeof loginUserSchema>) {
     const userRepository = dataSource.getRepository(User);
 
     try {
-      const [user] = await userRepository.find({
-        where: { email: data.email },
-        select: ['id', 'email', 'password'],
-      });
-
+      // const user = await userRepository.findOne({
+      //   where: { email: data.email },
+      //   select: ['id', 'email', 'password'],
+      // });
+      const filter = { email: data.email };
+      const selectedColumns = [
+        'id',
+        'email',
+        'password',
+      ] as FindOptionsSelect<User>;
+      const user = await this.getUserDataWithSelection(filter, selectedColumns);
       if (!user) {
         throw new Error('Invalid credentials');
       }
@@ -59,7 +83,12 @@ export class AuthService {
     } else {
       filter.id = identifier;
     }
-    const user = await UserService.getUser({ ...filter });
+
+    const userRepository = dataSource.getRepository(User);
+    const user = await userRepository.findOne({
+      where: filter,
+      select: ['id', 'email', 'is_verified_email', `email_confirm_token_hash`],
+    });
     if (user.is_verified_email) {
       return { message: 'Account already verified' };
     }

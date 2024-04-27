@@ -47,8 +47,8 @@ app.get('/', (req: Request, res: Response) => {
 // Error handler middleware
 app.use((err: any, req: Request, res: Response, next: any) => {
   console.error(err.stack);
-  return AppResponse.serverError({
-    res,
+  return res.status(err.statusCode || 400).json({
+    valid: false,
     message: err.message,
     errors: err,
   });

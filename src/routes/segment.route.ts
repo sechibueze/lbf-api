@@ -25,8 +25,8 @@ const fileHandleService = new FileHandlerService({ provider: 'cloudinary' });
 router.post(
   '/',
   catchAsyncErrors(
-    // checkAuth,
-    // verifyUserRoles(['admin']),
+    checkAuth,
+    verifyUserRoles(['admin']),
     fileHandleService.checkFile({
       fileSize: 500 * 1024,
       fileKey: 'image',

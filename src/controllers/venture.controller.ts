@@ -18,4 +18,12 @@ export class VentureController {
       data: venture,
     });
   }
+  static async listVentures(req: Request, res: Response) {
+    const ventures = await VentureService.listVentures({});
+    return AppResponse.ok({
+      res,
+      message: 'Venture list',
+      data: ventures,
+    });
+  }
 }

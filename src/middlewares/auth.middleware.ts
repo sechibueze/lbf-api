@@ -23,10 +23,36 @@ export const checkAuth = async (req, res, next) => {
 
     next();
   } catch (err) {
-    return AppResponse.bad({ res, message: 'Forbidden: Invalid token' });
+    return AppResponse.bad({
+      res,
+      message: 'Forbidden: Invalid token',
+      errors: err,
+    });
   }
 };
 
+export const verifyMembershipTypes = (allowedMemberTypes: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return AppResponse.unauthorized({
+        res,
+        message: 'Unauthorized: No user information found',
+      });
+    }
+
+    const userMembershipType = req.user.membership_type;
+
+    // Check if user role is included in the allowed roles
+    if (!allowedMemberTypes.includes(userMembershipType)) {
+      return AppResponse.unauthorized({
+        res,
+        message: 'Forbidden: Insufficient permissions',
+      });
+    }
+
+    next();
+  };
+};
 export const verifyUserRoles = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {

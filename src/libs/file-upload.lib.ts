@@ -8,6 +8,7 @@ import {
 } from 'cloudinary';
 import AWS from 'aws-sdk';
 import { appConfig } from '../constants/app.constant';
+import { AppError } from '../utils/error.util';
 
 interface FileHandlerOptions {
   provider: 'cloudinary' | 'S3';
@@ -16,7 +17,7 @@ interface FileHandlerOptions {
 class FileHandlerService {
   private upload: multer.Multer;
   private provider: string;
-  private filedName: string;
+  private fieldName: string;
 
   constructor(private options: FileHandlerOptions) {
     // Configure multer
@@ -44,7 +45,7 @@ class FileHandlerService {
     return async (req: Request, res: Response, next: NextFunction) => {
       if (this.provider === 'cloudinary') {
         const result = await this.uploadToCloudinary(req.file, options);
-        req.body[this.filedName || 'file'] = result.secure_url;
+        req.body[this.fieldName || 'file'] = result.secure_url;
         next();
       }
     };
@@ -55,38 +56,49 @@ class FileHandlerService {
     fileKey: string;
     fileSize?: number;
     fileType?: string;
+    fileRequired?: boolean;
   }) {
     return (req: Request, res: Response, next: NextFunction) => {
-      const { fileKey } = options || {};
+      const { fileKey, fileRequired } = options || {};
       this.upload.single(fileKey || 'file')(req, res, async (err: any) => {
         if (err) {
           next(err);
         }
 
         try {
-          if (!req.file) {
+          if (!req.file && fileRequired) {
             next(new Error('No file uploaded.'));
             return;
           }
 
           // Validate file size and type
           const { fileSize, fileType } = options || {};
-          if (fileSize && req.file.size > fileSize) {
-            next(new Error('File size exceeds the limit.'));
-            return;
+          if (req.file) {
+            if (fileSize && req.file?.size > fileSize) {
+              next(new Error('File size exceeds the limit.'));
+              return;
+            }
+            if (fileType && !req.file.mimetype.startsWith(fileType)) {
+              next(new Error('Invalid file type.'));
+              return;
+            }
           }
-          if (fileType && !req.file.mimetype.startsWith(fileType)) {
-            next(new Error('Invalid file type.'));
-            return;
-          }
-          this.filedName = fileKey;
+
+          this.fieldName = fileKey;
           // file is valid
           next();
         } catch (error) {
-          throw new Error(error.message);
+          throw new AppError(error.message);
         }
       });
     };
+  }
+
+  async uploadToStorage(file, options: UploadApiOptions) {
+    if (this.provider === 'cloudinary') {
+      const result = await this.uploadToCloudinary(file, options);
+      return result;
+    }
   }
 
   private async uploadToS3(req: any, res: any, next: any) {

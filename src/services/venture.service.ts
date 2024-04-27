@@ -39,6 +39,35 @@ export class VentureService {
       throw new Error('Failed to get venture details');
     }
   }
+  static async listVentures({
+    ownerId,
+    ventureId,
+  }: {
+    ownerId?: string;
+    ventureId?: string;
+  }) {
+    const whereCondition: ventureQueryOption = {};
+    if (ownerId)
+      whereCondition.owner = {
+        id: ownerId,
+      };
+    if (ventureId) whereCondition.id = ventureId;
+
+    try {
+      const ventureRepository = dataSource.getRepository(Venture);
+
+      const venture = await ventureRepository.find({
+        where: whereCondition,
+        relations: {
+          owner: true,
+        },
+      });
+
+      return venture;
+    } catch (error) {
+      throw new Error('Failed to list venture details');
+    }
+  }
   static async createVenture(data: any) {
     const existingVenture = await this.getVenture({ ownerId: data.owner });
 

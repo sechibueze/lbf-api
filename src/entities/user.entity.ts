@@ -1,6 +1,7 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import { AppBaseEntity } from './base.entity';
 import { Venture } from './venture.entity';
+import { Product } from './product.entity';
 
 @Entity({ name: 'users' })
 export class User extends AppBaseEntity {
@@ -13,10 +14,10 @@ export class User extends AppBaseEntity {
   @Column({ type: 'varchar', length: 100, nullable: false, select: false })
   password: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: 'varchar', length: 100, nullable: true, select: false })
   email_confirm_token_hash: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: 'varchar', length: 100, nullable: true, select: false })
   password_reset_token_hash: string;
 
   @Column({ type: 'bool', default: false })
@@ -33,4 +34,7 @@ export class User extends AppBaseEntity {
 
   @OneToMany(() => Venture, (venture) => venture.owner)
   ventures: Venture[];
+
+  @OneToMany(() => Product, (product) => product.owner)
+  products: Product[];
 }
