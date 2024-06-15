@@ -57,13 +57,17 @@ export class LBFItemController {
         tags: lbfItemTags,
         pickup_point: lbfItemPickupPoint,
         image: lbfItemImage,
+        claimer: lbfClaimer,
       } = req.body;
+      const hasClaimer = lbfClaimer || existingItem.claimer;
       const lbfItem = {
         name: lbfItemName || existingItem.name,
         description: lbfItemDesc || existingItem.description,
         pickup_point: lbfItemPickupPoint || existingItem.pickup_point,
         image: lbfItemImage || existingItem.image,
         tags: lbfItemTags || existingItem.tags,
+        claimer: hasClaimer,
+        is_claimed: hasClaimer ? true : false,
       };
 
       const updatedProduct = await lbfItemRepository.update(

@@ -2,6 +2,11 @@ import { Entity, Column, ManyToOne, Index } from 'typeorm';
 import { AppBaseEntity } from './base.entity';
 import { User } from './user.entity';
 
+interface ClaimerType {
+  full_name: string;
+  email: string;
+  phone_number: string;
+}
 @Entity({ name: 'lbf-items' })
 export class LBFItem extends AppBaseEntity {
   @ManyToOne(() => User, (user) => user.lbf_items)
@@ -29,4 +34,7 @@ export class LBFItem extends AppBaseEntity {
 
   @Column({ type: 'varchar', default: '' })
   tags: string;
+
+  @Column({ type: 'json', nullable: true })
+  claimer: ClaimerType;
 }
