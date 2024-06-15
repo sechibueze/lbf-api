@@ -51,7 +51,7 @@ router.put(
     checkAuth,
     verifyUserRoles(['admin']),
     fileHandleService.checkFile({
-      fileSize: 500 * 1024,
+      fileSize: 1 * 1024 * 1024, // 1mb
       fileKey: 'image',
       fileType: 'image/',
       fileRequired: false,

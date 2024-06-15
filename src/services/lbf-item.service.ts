@@ -89,7 +89,7 @@ export class LBFItemService {
         .where('LOWER(lbf_item.name) like :name', {
           name: `%${searchCriteria.q.toLowerCase()}%`,
         })
-        .orWhere('LOWER(lbf_item.description) like :name', {
+        .orWhere('LOWER(lbf_item.description) like :description', {
           description: `%${searchCriteria.q.toLowerCase()}%`,
         });
     }
