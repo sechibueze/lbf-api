@@ -92,6 +92,16 @@ export class LBFItemController {
       data: itemsList,
     });
   }
+  static async deleteLBFItem(req: Request, res: Response) {
+    const lbfItem = await LBFItemService.deleteLBFItem({
+      itemId: req.params.itemId,
+    });
+    return AppResponse.ok({
+      res,
+      message: 'LBF removed!',
+      data: {},
+    });
+  }
   static async getLBFItem(req: Request, res: Response) {
     const lbfItem = await LBFItemService.getLBFItem({
       itemId: req.params.itemId,

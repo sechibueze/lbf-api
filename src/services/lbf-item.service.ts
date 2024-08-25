@@ -52,6 +52,16 @@ export class LBFItemService {
       throw new AppError(error.message || 'Failed to fetch item');
     }
   }
+  static async deleteLBFItem({ itemId }) {
+    try {
+      const lbfItemRepository = dataSource.getRepository(LBFItem);
+
+      const existingLBFItem = await lbfItemRepository.delete(itemId);
+      return existingLBFItem;
+    } catch (error) {
+      throw new AppError(error.message || 'Failed to fetch item');
+    }
+  }
 
   static async listLBFItems() {
     try {
