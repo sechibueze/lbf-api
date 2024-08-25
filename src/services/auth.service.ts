@@ -161,7 +161,7 @@ export class AuthService {
 
     const notified = new Notifier().sendEmail(user.email, {
       name: user.full_name,
-      subject: 'Reset your password on Pamundo',
+      subject: 'Reset your password on LBF Portal',
       token,
       topic: NOTIFICATION_FILTER.PASSWORD_RESET_TOKEN,
     });

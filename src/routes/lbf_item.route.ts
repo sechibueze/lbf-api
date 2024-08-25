@@ -111,5 +111,23 @@ router.get(
     LBFItemController.listLBFItems
   )
 );
+/***
+ * @method DELETE
+ * @route /lbf-items/:itemId
+ * @query none
+ * @params none
+ * @access admin
+ * @role none
+ * @body
+ * @description Remove items
+ */
+router.delete(
+  '/:itemId',
+  catchAsyncErrors(
+    checkAuth,
+    verifyUserRoles(['admin']),
+    LBFItemController.deleteLBFItem
+  )
+);
 
 export default router;

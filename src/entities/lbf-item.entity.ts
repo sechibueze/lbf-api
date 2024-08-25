@@ -1,6 +1,7 @@
-import { Entity, Column, ManyToOne, Index } from 'typeorm';
+import { Entity, Column, ManyToOne, Index, OneToOne } from 'typeorm';
 import { AppBaseEntity } from './base.entity';
 import { User } from './user.entity';
+import { Claimer } from './claimer.entity';
 
 interface ClaimerType {
   full_name: string;
@@ -35,6 +36,6 @@ export class LBFItem extends AppBaseEntity {
   @Column({ type: 'varchar', default: '' })
   tags: string;
 
-  @Column({ type: 'json', nullable: true })
-  claimer: ClaimerType;
+  @OneToOne(() => Claimer, (claimer) => claimer.lbf_item, { nullable: true })
+  claimer: Claimer;
 }
