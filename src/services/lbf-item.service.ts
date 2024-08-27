@@ -44,6 +44,7 @@ export class LBFItemService {
         where: {
           id: itemId,
         },
+        relations: ['claimer'],
       };
 
       const existingLBFItem = await lbfItemRepository.findOne(findOpts);
@@ -67,10 +68,12 @@ export class LBFItemService {
     try {
       const lbfItemRepository = dataSource.getRepository(LBFItem);
       const queryBuilder = lbfItemRepository.createQueryBuilder('lbf_item');
+      queryBuilder
+        .leftJoinAndSelect('lbf_item.claimer', 'claimer')
+        .orderBy('lbf_item.createdAt', 'DESC');
 
-      queryBuilder.orderBy('lbf_item.createdAt', 'DESC');
+      // queryBuilder.orderBy('lbf_item.createdAt', 'DESC');
       const [lbf_items, totalItems] = await queryBuilder.getManyAndCount();
-
       return {
         lbf_items,
         meta: {
