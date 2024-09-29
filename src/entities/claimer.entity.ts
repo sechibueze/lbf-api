@@ -13,6 +13,9 @@ export class Claimer extends AppBaseEntity {
   @Column({ type: 'varchar', length: 20 })
   phone_number: string;
 
+  @Column({ type: 'varchar', default: '', length: 20 })
+  gender: string;
+
   @OneToOne(() => LBFItem, (item) => item.claimer, { onDelete: 'CASCADE' })
   @JoinColumn()
   lbf_item: LBFItem;

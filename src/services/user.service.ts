@@ -5,6 +5,7 @@ import { NOTIFICATION_FILTER, Notifier } from '../libs/notification.lib';
 import { z } from 'zod';
 import { createUserSchema } from '../schema/user.schema';
 import { AuthService } from './auth.service';
+import { AppError } from '../utils/error.util';
 
 interface userQueryOption {
   email?: string;
@@ -22,14 +23,14 @@ export class UserService {
       const user = await userRepository.findOneBy({ ...queryOption });
       return user;
     } catch (error) {
-      throw new Error(`Failed to get user details ${error}`);
+      throw new AppError(`Failed to get user details ${error}`);
     }
   }
   static async createUser(data: z.infer<typeof createUserSchema>) {
     const existingUser = await this.getUser({ email: data.email });
 
     if (existingUser) {
-      throw new Error('Account already exists');
+      throw new AppError('Account already exists');
     }
     const token = AuthService.generateVerificationToken();
     const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -44,7 +45,7 @@ export class UserService {
 
     const notified = new Notifier().sendAccountEmail(newUser.email, {
       name: newUser.full_name,
-      subject: 'Pamundo Signup Verification Code',
+      subject: 'Lost But Found Signup Verification Code',
       token,
       topic: NOTIFICATION_FILTER.ACCOUNT_NEW,
     });

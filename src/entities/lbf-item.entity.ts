@@ -30,6 +30,9 @@ export class LBFItem extends AppBaseEntity {
   @Column({ type: 'varchar', length: 255 })
   pickup_point: string;
 
+  @Column({ type: 'varchar', default: '', length: 255 })
+  gender: string;
+
   @Column({ type: 'varchar' })
   image: string;
 
