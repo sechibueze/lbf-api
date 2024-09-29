@@ -3,7 +3,6 @@ import { catchAsyncErrors } from '../middlewares/catchAsyncErrors.middleware';
 import { validateRequest } from '../middlewares/validator.middleware';
 import FileHandlerService from '../libs/file-upload.lib';
 import { checkAuth, verifyUserRoles } from '../middlewares/auth.middleware';
-import { appConfig } from '../constants/app.constant';
 import { createLBFItemSchema } from '../schema/lbf-item.schema';
 import { LBFItemController } from '../controllers/lbf-item.controller';
 

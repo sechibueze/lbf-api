@@ -8,6 +8,9 @@ export const createLBFItemSchema = z.object({
   pickup_point: z.string({
     required_error: 'Pictup point is required',
   }),
+  gender: z.string({
+    required_error: 'Gender is required',
+  }),
   image: z
     .string({
       required_error: 'Item image is required',
