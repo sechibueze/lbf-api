@@ -3,6 +3,8 @@
 NOTES.md
 .env
 node_modules
+Dockerfile
+docker-compose.yml
 
 # Logs
 logs
