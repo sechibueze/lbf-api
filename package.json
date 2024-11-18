@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "tsc": "tsc",
     "dev": "tsc-watch --onSuccess \"node dist/server.js\"",
     "start": "node dist/server.js",
-    "postinstall": "npm run tsc",
-    "build": "ls && npm run tsc",
+    "build": "tsc",
     "lint": "eslint src/**/*.ts",
     "test": "jest",
     "test:watch": "jest --watch"
